@@ -1,0 +1,12 @@
+reliable_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: reliable_postgres
+      user: data_user
+      password: data_pass
+      port: 5432
+      dbname: analytics
+      schema: public
+

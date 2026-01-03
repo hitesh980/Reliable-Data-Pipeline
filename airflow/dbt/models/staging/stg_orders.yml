@@ -1,0 +1,19 @@
+version: 2
+
+models:
+   - name: stg_orders
+     description: "staged orders with enforced data quality rules"
+     columns:
+       - name: order_id
+         description: "Primary Key for orders"
+         tests:
+          - not_null
+          - unique
+
+
+       - name: order_amount
+         description: "Order amount"
+         tests:
+           - not_null
+           - dbt_utils.expression_is_true:
+                expression: "order_amount >= 0"

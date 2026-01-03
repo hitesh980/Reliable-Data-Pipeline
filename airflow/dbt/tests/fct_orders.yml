@@ -1,0 +1,26 @@
+version: 2
+
+modles:
+   - name: fct_orders
+     description: "Fact Table: Aggregated user orders"
+     columns:
+        - name: user_id
+          description: "Primary Key for users"
+          tests:
+             - unique
+             - not_null
+
+
+        - name: total_orders
+          description: " Total number of orders per user"
+          tests:
+            - not_null
+
+
+        - name: total_orders
+          description: " Sum of all order_number of orders per user"
+          tests:
+             - not_null
+             - dbt_utils.expression_is_true:
+                   expression: "total_amount >= 0"
+            

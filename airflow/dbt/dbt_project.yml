@@ -1,0 +1,12 @@
+name: reliable_dbt
+version: "1.0"
+config-version: 2
+
+profile: reliable_dbt
+
+model-paths: ["models"]
+
+models:
+  reliable_dbt:
+    staging:
+      +materialized: view

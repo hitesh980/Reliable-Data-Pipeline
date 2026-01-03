@@ -1,0 +1,7 @@
+__pycache__/
+.env
+*.log
+.airflow/
+dbt/target/
+dbt/logs/
+.DS_Store

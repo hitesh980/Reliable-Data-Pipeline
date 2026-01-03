@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+    postgres:
+     image: postgres:14 
+     container_name: reliable_postgres
+     environment:
+       POSTGRES_USER: data_user
+       POSTGRES_PASSWORD: data_pass
+       POSTGRES_DB: analytics
+     ports:
+       - "5432:5432"
+     volumes:
+       - postgres_data:/var/lib/postgresql/data
+
+
+    airflow:
+      image: apache/airflow:2.8.1
+      container_name : reliable_airflow
+      depends_on:
+        - postgres
+      environment:
+        AIRFLOW__CORE__EXECUTOR: LocalExecutor
+        AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+        AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://data_user:data_pass@postgres:5432/analytics
+        AIRFLOW__CORE__FERNET_KEY: ""
+        _PIP_ADDITIONAL_REQUIREMENTS: faker pandas psycopg2-binary dbt-postgres
+      volumes:
+        - ./airflow/dags:/opt/airflow/dags
+        - ./airflow/logs:/opt/airflow/logs
+        - ./airflow/plugins:/opt/airflow/plugins
+        - ./data:/opt/airflow/data
+        - ./airflow/dbt:/opt/airflow/dbt
+        - ./airflow/dbt/profiles.yml:/home/airflow/.dbt/profiles.yml:ro
+
+      ports:
+        - "8080:8080"
+      command: >
+        bash -c "
+        sleep 10 &&
+        airflow db init &&
+        airflow users create
+          --username admin
+          --firstname Admin
+          --lastname User 
+          --role Admin 
+          --email admin@example.com 
+          --password admin || true && #true beacuse incase user alreay exits but keep going
+        airflow scheduler &
+        airflow webserver
+        "
+      
+
+
+
+volumes:
+   postgres_data:
